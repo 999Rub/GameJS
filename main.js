@@ -28,12 +28,13 @@ const config = {
 var cody
 var pipe
 var over = false
-var mapSize = 100
+var mapSize = 900
 var stars
 var score = 0
 var start = false
 var scoreText
 var overText
+var speedGame = 300
 
 // Paramètres de la scène pour le scroll infini
 let cursors
@@ -124,6 +125,7 @@ function create ()
     .setScale(0.03)
     .setBounce(0.2)
     .setScrollFactor(0)
+    .setGravityY(300)
     cody.body.allowGravity = false
     cody.setDataEnabled()
     cody.data.set('score', 0)
@@ -182,13 +184,13 @@ function update ()
         ]).setVisible(true)
         
 // Initialisation de différents paramètres pour lancer le jeu
-        pipe.setVelocity(-300, 0)
-        pipe2.setVelocity(-300, 0)
+        pipe.setVelocity(-speedGame, 0)
+        pipe2.setVelocity(-speedGame, 0)
         cody.body.allowGravity = true
         cody.setGravityY(50)
-        star.setVelocity(-300,0)
+        star.setVelocity(-speedGame,0)
         const cam = this.cameras.main
-        const speed = 3
+        const speed = 3+cody.data.values.score*0.1
         cam.scrollX += speed
         this.physics.collide(cody,[pipe, pipe2]) 
         this.physics.add.overlap(cody, star, collectStar, null, this)
@@ -261,6 +263,7 @@ function collectStar(cody, star){
     cody.data.values.score += 1
     star.disableBody(true, true)
     createStar(star)
+    speedGame = speedGame+(cody.data.values.score*4)
 
 }
 
