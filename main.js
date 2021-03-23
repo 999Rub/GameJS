@@ -28,7 +28,7 @@ const config = {
 var cody
 var pipe
 var over = false
-const mapSize = 100
+var mapSize = 100
 var stars
 var score = 0
 var start = false
@@ -135,7 +135,7 @@ function create ()
    .setImmovable(true)
    .setScrollFactor(false)
    .setBounce(1,1)
-  star.body.allowGravity= false
+    star.body.allowGravity= false
     
 // Ajout des texts de départ
     var add = this.add
@@ -148,7 +148,7 @@ function create ()
         add.text(16, 0, 'Press \nspace \nto start', 
         { fontFamily: 'Finger Paint', fontSize: 80, color: '#ffffff' })
         .setShadow(2, 2, "#333333", 2, false, true)
-        add.text(500, 290, 'Collect stars to get points', 
+        add.text(500, 200, 'Collect stars to get points', 
         { fontFamily: 'Finger Paint', fontSize: 20, color: '#ffffff' })
         .setShadow(2, 2, "#333333", 2, false, true)
     }})
@@ -200,6 +200,7 @@ function update ()
         if(pipe.x < -30){
             pipe.x = Math.random()*(900 - 1200) + 1200
             pipe.y = Math.random()*(-50 - 50) + 50
+            mapSize ++
 
         }
 
