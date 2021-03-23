@@ -32,8 +32,10 @@ var pipe
 var over = false
 const mapSize = 100
 var stars
-var score
+var score = 0
 var start = false
+var scoreText
+var overText
 
 
 
@@ -82,6 +84,7 @@ function preload ()
     this.load.image('clouds', 'assets/clouds.png')
     this.load.image('bird', 'assets/bird.png')
     this.load.image('star', 'assets/star.png')
+    this.load.script('webfont', 'https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js');
 
     
 
@@ -139,6 +142,8 @@ function create ()
     .setBounce(0.2)
     .setScrollFactor(0)
     cody.body.allowGravity = false
+    cody.setDataEnabled()
+    cody.data.set('score', 0)
 
 
    stars = this.physics.add.group()
@@ -155,12 +160,28 @@ function create ()
 // dès que colonne on fait un tour on rajoute une taille d'écran au jeu pour le scroll infini
     speed2 = Phaser.Math.GetSpeed(600, 3);
     
+    var add = this.add
     this.cameras.main.setBounds(0, 0, width*mapSize, height)
-
+    WebFont.load({
+        google: {
+            families: [ 'Freckle Face', 'Finger Paint', 'Nosifer' ]
+        },
+    active: function(){
+        add.text(16, 0, 'Press \nspace \nto start', 
+        { fontFamily: 'Finger Paint', fontSize: 80, color: '#ffffff' })
+        .setShadow(2, 2, "#333333", 2, false, true)
+    }})
+      
     
-    
+       
     cursors = this.input.keyboard.createCursorKeys()
-
+    scoreText = this.add.text(350, 10,'', 
+        { fontFamily: 'Finger Paint', fontSize: 50, color: '#ffffff' })
+        .setShadow(2, 2, "#333333", 2, false, true).setScrollFactor(false)
+    overText = this.add.text(150, 150,'', 
+        { fontFamily: 'Finger Paint', fontSize: 50, color: '#ffffff' })
+        .setShadow(2, 2, "#333333", 2, false, true).setScrollFactor(false)
+    
 
 }
 
@@ -171,7 +192,13 @@ function update (time, delta)
      
 {
 
+   
     if (start == true) {
+        scoreText.setText([
+            'Score:'+cody.data.get('score')
+        ]).setVisible(true)
+        
+        
         pipe.setVelocity(-300, 0)
         pipe2.setVelocity(-300, 0)
         cody.body.allowGravity = true
@@ -182,7 +209,9 @@ function update (time, delta)
         cam.scrollX += speed
         this.physics.collide(cody,[pipe, pipe2]) 
         this.physics.add.overlap(cody, star, collectStar, null, this)
-
+        this.physics.add.overlap(cody, [pipe,pipe2], gameOver, null, this)
+        
+        
 
     
         if(pipe.x < -30){
@@ -230,21 +259,29 @@ function update (time, delta)
             }
         
         }
+       
         
+    }else{
+       
     }
     
-    if (cursors.space.isDown){
+    if (cursors.space.isDown && over == false){
         start = true
              
      }
+    if (cursors.space.isDown && over == true) {
+        over = false
+        document.location.reload()
+    }
     
 
     }
 
 
 function collectStar(cody, star, score){
-    star.disableBody(true, true)
     score += 12
+    cody.data.values.score += 12
+    star.disableBody(true, true)
     createStar(star)
 
 }
@@ -256,7 +293,20 @@ function createStar(star){
 }
 
 function gameOver(){
-
+    start = false
+    overText.setText([
+        'Game Over ! ',
+        '\n    Your score is : '+ cody.getData('score'),
+        '\n Press space to restart'
+    ])
+    pipe.setVelocity(0,0)
+    pipe2.setVelocity(0,0)
+    star.setVelocity(0,0)
+    cody.rotation = 0.5
+    this.registry.destroy()
+    this.events.off()
+    over = true
+    scoreText.setVisible(false)
 }
 
 
