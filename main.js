@@ -145,7 +145,7 @@ function create ()
             families: [ 'Freckle Face', 'Finger Paint', 'Nosifer' ]
         },
     active: function(){
-        add.text(16, 0, 'Press \nspace \nto start', 
+        add.text(16, 0, 'Press \nspace \nto play', 
         { fontFamily: 'Finger Paint', fontSize: 80, color: '#ffffff' })
         .setShadow(2, 2, "#333333", 2, false, true)
         add.text(500, 200, 'Collect stars to get points', 
