@@ -33,6 +33,7 @@ var over = false
 const mapSize = 100
 var stars
 var score
+var start = false
 
 
 
@@ -121,7 +122,6 @@ function create ()
    pipe.setImmovable(true)
    .setScrollFactor(0)
    .setSize(175, 500, true)
-   .setVelocity(-300, 0)    
    .setOffset(95,200)
 
 // Création des colonnes qui arrivent par le bas
@@ -130,7 +130,6 @@ function create ()
    pipe2.body.allowGravity = false
    pipe2.setImmovable(true)
    .setSize(175, 500, true)
-   .setVelocity(-300, 0)
    .setOffset(95,0)
    
 
@@ -138,21 +137,22 @@ function create ()
     cody = this.physics.add.image(300, 375, 'bird')
     .setScale(0.03)
     .setBounce(0.2)
-    .setCollideWorldBounds(true)
-    .setGravityY(50)
     .setScrollFactor(0)
+    cody.body.allowGravity = false
 
 
    stars = this.physics.add.group()
-   star = stars.create(600, 300, 'star')
+   star = stars.create(Math.random()*(1100-3000)+3000, Math.random()*(500-100)+100, 'star')
    .setScale(0.02)
    .setImmovable(true)
    .setScrollFactor(false)
    .setBounce(1,1)
    
+   
+   
   star.body.allowGravity= false
     
-
+// dès que colonne on fait un tour on rajoute une taille d'écran au jeu pour le scroll infini
     speed2 = Phaser.Math.GetSpeed(600, 3);
     
     this.cameras.main.setBounds(0, 0, width*mapSize, height)
@@ -171,68 +171,76 @@ function update (time, delta)
      
 {
 
-    const cam = this.cameras.main
-    const speed = 3
-    cam.scrollX += speed
-    this.physics.collide(cody,[pipe, pipe2]) 
-    this.physics.add.overlap(cody, star, collectStar, null, this)
+    if (start == true) {
+        pipe.setVelocity(-300, 0)
+        pipe2.setVelocity(-300, 0)
+        cody.body.allowGravity = true
+        cody.setGravityY(50)
+        star.setVelocity(-300,0)
+        const cam = this.cameras.main
+        const speed = 3
+        cam.scrollX += speed
+        this.physics.collide(cody,[pipe, pipe2]) 
+        this.physics.add.overlap(cody, star, collectStar, null, this)
 
 
     
-    if(pipe.x < -30){
-        pipe.x = Math.random()*(900 - 1200) + 1200
-        pipe.y = Math.random()*(-50 - 50) + 50
+        if(pipe.x < -30){
+            pipe.x = Math.random()*(900 - 1200) + 1200
+            pipe.y = Math.random()*(-50 - 50) + 50
 
-    }
+        }
 
-   // pipe2.x -= 3
-    if(pipe2.x < -30){
-        pipe2.x = Math.random()*(900 - 1200) + 1200
-        pipe2.y = Math.random()*(650 - 550 ) + 550
+        // pipe2.x -= 3
+        if(pipe2.x < -30){
+            pipe2.x = Math.random()*(900 - 1200) + 1200
+            pipe2.y = Math.random()*(650 - 550 ) + 550
 
-    }
+        }
 
-    if(star.x <-50){
-        star.x = Math.random()*(1100-3000)+3000
-        star.y = Math.random()*(500-100)+100
-    }
+        if(star.x <-50){
+            star.x = Math.random()*(1100-3000)+3000
+            star.y = Math.random()*(500-100)+100
+        }
 
-    if (cody.body.velocity.y >0) {
-        cody.rotation = 0.5
-    }
+        if (cody.body.velocity.y >0) {
+            cody.rotation = 0.5
+        }
 
   
 
-    if (cursors.left.isDown){
-        cody.x -= 4; 
-    }
-    if (cursors.right.isDown){
-        cody.x += 4
+        if (cursors.left.isDown){
+            cody.x -= 4; 
+        }
+        if (cursors.right.isDown){
+            cody.x += 4
 
-    }
-    if (cursors.space.isDown){
-        cody.setVelocityY(-200)
-        for (let i = 0; i <= 0.5; i += 0.001) {
-            cody.rotation = -i
-            
+        }
+        if (cursors.space.isDown){
+            cody.setVelocityY(-200)
+            for (let i = 0; i <= 0.5; i += 0.001) {
+                cody.rotation = -i
+            }
         }
 
-    if (cody.body.velocityY >= 0) {
-        for (let i = 0; i <= 0.5; i += 0.001) {
-            cody.rotation = i
+        if (cody.body.velocityY >= 0) {
+            for (let i = 0; i <= 0.5; i += 0.001) {
+                cody.rotation = i
             
+            }
+        
         }
         
     }
-
+    
+    if (cursors.space.isDown){
+        start = true
+             
+     }
     
 
     }
 
-    
-
-   
-}
 
 function collectStar(cody, star, score){
     star.disableBody(true, true)
