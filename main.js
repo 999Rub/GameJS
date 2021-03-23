@@ -1,4 +1,4 @@
-
+// Config du monde
 const config = {
     type: Phaser.WEBGL,
     width: 800,
@@ -10,7 +10,7 @@ const config = {
         default: 'arcade',
         arcade: {
             gravity: {y : 300},
-            debug: true
+            debug: false
         },
         matter: {
             gravity: { y: 1 },
@@ -24,9 +24,7 @@ const config = {
     }
 };
 
-
-
-var speed2;
+// Variable qui seront utilisées au cour du jeu
 var cody
 var pipe
 var over = false
@@ -37,12 +35,7 @@ var start = false
 var scoreText
 var overText
 
-
-
-
-
-
-
+// Paramètres de la scène pour le scroll infini
 let cursors
 /**
  * 
@@ -52,6 +45,7 @@ let cursors
  * @param {number} scrollFactor
  */
 
+// Ajout infini du décor
 const infiniteAdd = (scene, mapSize, texture, scrollFactor) =>{
     height = 600
     width= 800
@@ -60,20 +54,15 @@ const infiniteAdd = (scene, mapSize, texture, scrollFactor) =>{
         const m =   scene.add.image(x, height, texture)
         .setOrigin(0,1)
         .setScrollFactor(scrollFactor)
-        x += m.width - 5
-          
+        x += m.width - 5  
     }
-   
-   
-    
-    
-
 }
 
 var game =  new Phaser.Game(config)
 
 function preload ()
 {
+    // Chargement des ressources
     this.load.image('plateau', 'assets/plateau.png');
     this.load.image('pipe', 'assets/romanColumn.png')
     this.load.image('sky', 'assets/sky.png')
@@ -94,12 +83,12 @@ var ground
 function create ()
 {
    
-
+// Dimensions de la fenêtre de jeu
     const width = 800
     const height = 600
     this.add.image(width*0.5 , height*0.5 , 'sky').setScrollFactor(0)
 
-
+// Ajout des différents éléments du décor
     infiniteAdd(this, mapSize, 'montagne3', 0.05)
 
     infiniteAdd(this, mapSize, 'montagne2', 0.1 )
@@ -111,12 +100,6 @@ function create ()
     infiniteAdd(this, mapSize, 'plateau', 0.45)
 
     infiniteAdd(this, mapSize, 'ground', 0.55)
-
-    
-
-
-
-
 
 // Création des colonnes qui arrivent par le haut
    pipe = this.physics.add.image(1400 ,0, 'pipe').setScale(0.5)
@@ -145,21 +128,16 @@ function create ()
     cody.setDataEnabled()
     cody.data.set('score', 0)
 
-
+// Création des étoiles à récolter
    stars = this.physics.add.group()
    star = stars.create(Math.random()*(1100-3000)+3000, Math.random()*(500-100)+100, 'star')
    .setScale(0.02)
    .setImmovable(true)
    .setScrollFactor(false)
    .setBounce(1,1)
-   
-   
-   
   star.body.allowGravity= false
     
-// dès que colonne on fait un tour on rajoute une taille d'écran au jeu pour le scroll infini
-    speed2 = Phaser.Math.GetSpeed(600, 3);
-    
+// Ajout des texts de départ
     var add = this.add
     this.cameras.main.setBounds(0, 0, width*mapSize, height)
     WebFont.load({
@@ -170,16 +148,21 @@ function create ()
         add.text(16, 0, 'Press \nspace \nto start', 
         { fontFamily: 'Finger Paint', fontSize: 80, color: '#ffffff' })
         .setShadow(2, 2, "#333333", 2, false, true)
+        add.text(500, 290, 'Collect stars to get points', 
+        { fontFamily: 'Finger Paint', fontSize: 20, color: '#ffffff' })
+        .setShadow(2, 2, "#333333", 2, false, true)
     }})
       
     
-       
+// Récup des touches clavier
     cursors = this.input.keyboard.createCursorKeys()
-    scoreText = this.add.text(350, 10,'', 
+
+// Ajout du text score + du text gameOver
+    scoreText = this.add.text(375, 10,'', 
         { fontFamily: 'Finger Paint', fontSize: 50, color: '#ffffff' })
         .setShadow(2, 2, "#333333", 2, false, true).setScrollFactor(false)
     overText = this.add.text(150, 150,'', 
-        { fontFamily: 'Finger Paint', fontSize: 50, color: '#ffffff' })
+        { fontFamily: 'Freckle Face', fontSize: 50, color: '#ffffff' })
         .setShadow(2, 2, "#333333", 2, false, true).setScrollFactor(false)
     
 
@@ -187,18 +170,18 @@ function create ()
 
 
 
-function update (time, delta)
+function update ()
    
      
 {
 
-   
+// Check si le jeu à commencé
     if (start == true) {
         scoreText.setText([
-            'Score:'+cody.data.get('score')
+            cody.data.get('score')
         ]).setVisible(true)
         
-        
+// Initialisation de différents paramètres pour lancer le jeu
         pipe.setVelocity(-300, 0)
         pipe2.setVelocity(-300, 0)
         cody.body.allowGravity = true
@@ -213,45 +196,38 @@ function update (time, delta)
         
         
 
-    
+    // Retour du pipe haut à droite
         if(pipe.x < -30){
             pipe.x = Math.random()*(900 - 1200) + 1200
             pipe.y = Math.random()*(-50 - 50) + 50
 
         }
 
-        // pipe2.x -= 3
+    // Retour du pipe bas à droite
         if(pipe2.x < -30){
             pipe2.x = Math.random()*(900 - 1200) + 1200
             pipe2.y = Math.random()*(650 - 550 ) + 550
 
         }
-
+    // Retour à droite de l'étoile si loupée
         if(star.x <-50){
             star.x = Math.random()*(1100-3000)+3000
             star.y = Math.random()*(500-100)+100
         }
-
+    // Animation chute quand personnage tombe
         if (cody.body.velocity.y >0) {
             cody.rotation = 0.5
         }
 
-  
-
-        if (cursors.left.isDown){
-            cody.x -= 4; 
         }
-        if (cursors.right.isDown){
-            cody.x += 4
-
-        }
+    // Saut avec la touche espace
         if (cursors.space.isDown){
             cody.setVelocityY(-200)
             for (let i = 0; i <= 0.5; i += 0.001) {
                 cody.rotation = -i
             }
         }
-
+    // Animation saut vers le haut
         if (cody.body.velocityY >= 0) {
             for (let i = 0; i <= 0.5; i += 0.001) {
                 cody.rotation = i
@@ -259,52 +235,53 @@ function update (time, delta)
             }
         
         }
+    // Fin du game si on sort du cadre
+        if (cody.y > 650 || cody.y < -50) {
+            gameOver()
+        }
        
         
-    }else{
-       
-    }
     
-    if (cursors.space.isDown && over == false){
-        start = true
-             
-     }
+    // Si gameOver on recharge le jeu
+        if (cursors.space.isDown && over == false){
+            start = true     
+        }
+    // Si game over on reload la page avec espace
     if (cursors.space.isDown && over == true) {
         over = false
         document.location.reload()
     }
     
 
-    }
+}
 
-
-function collectStar(cody, star, score){
-    score += 12
-    cody.data.values.score += 12
+// Récolte des étoiles
+function collectStar(cody, star){
+    cody.data.values.score += 1
     star.disableBody(true, true)
     createStar(star)
 
 }
 
+// Création random des étoiles
 function createStar(star){
     x = Math.random()*(1100-3000)+3000
     y = Math.random()*(500-100)+100
     star.enableBody(true, x, y, true, true).setVelocity(-300, 0)
 }
 
+// Fonction de fin de jeu
 function gameOver(){
     start = false
     overText.setText([
         'Game Over ! ',
-        '\n    Your score is : '+ cody.getData('score'),
+        '\n    Stars collected : '+ cody.getData('score'),
         '\n Press space to restart'
     ])
     pipe.setVelocity(0,0)
     pipe2.setVelocity(0,0)
     star.setVelocity(0,0)
     cody.rotation = 0.5
-    this.registry.destroy()
-    this.events.off()
     over = true
     scoreText.setVisible(false)
 }
