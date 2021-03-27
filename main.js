@@ -1,8 +1,8 @@
 // Config du monde
 const config = {
-    type: Phaser.WEBGL,
-    width: 375,
-    height: 812,
+    type: Phaser.AUTO,
+    width: 390,
+    height: 700,
     parent: 'phaser-example',
     backgroundColor: '#9adaea',
     useTicker: true,
@@ -22,6 +22,8 @@ const config = {
         create: create,
         update: update
     }
+  
+    
 };
 
 // Variable qui seront utilisées au cour du jeu
@@ -49,8 +51,8 @@ let cursors
 
 // Ajout infini du décor
 const infiniteAdd = (scene, mapSize, texture, scrollFactor) =>{
-    height = 812
-    width= 375
+    height = 700
+    width= 390
     let x = 0
     for (let i = 0; i < mapSize; i++) {
         const m =   scene.add.image(x, height, texture)
@@ -86,8 +88,8 @@ function create ()
 {
    
 // Dimensions de la fenêtre de jeu
-    const width = 375
-    const height = 812
+    const width = 390
+    const height = 700
     this.add.image(width*0.5 , height*0.5 , 'sky').setScrollFactor(0)
 
 // Ajout des différents éléments du décor
@@ -122,18 +124,18 @@ function create ()
    
 
 // Création du personnage à contrôler
-    cody = this.physics.add.image(50, 375, 'bird')
+    cody = this.physics.add.image(150, 300, 'bird')
     .setScale(0.03)
     .setBounce(0.2)
     .setScrollFactor(0)
-    .setGravityY(300)
+    .setGravityY(350)
     cody.body.allowGravity = false
     cody.setDataEnabled()
     cody.data.set('score', 0)
 
 // Création des étoiles à récolter
    stars = this.physics.add.group()
-   star = stars.create(Math.random()*(1100-3000)+3000, Math.random()*(500-100)+100, 'star')
+   star = stars.create(Math.random()*(1100-3000)+3000, Math.random()*(600-100)+100, 'star')
    .setScale(0.02)
    .setImmovable(true)
    .setScrollFactor(false)
@@ -212,13 +214,13 @@ function update ()
     // Retour du pipe bas à droite
         if(pipe2.x < -30){
             pipe2.x = Math.random()*(900 - 1200) + 1200
-            pipe2.y = Math.random()*(812 - 780 ) + 780
+            pipe2.y = Math.random()*(750 - 600 ) + 600
 
         }
     // Retour à droite de l'étoile si loupée
         if(star.x <-50){
             star.x = Math.random()*(1100-3000)+3000
-            star.y = Math.random()*(500-100)+100
+            star.y = Math.random()*(600-100)+100
         }
     // Animation chute quand personnage tombe
         if (cody.body.velocity.y >0) {
