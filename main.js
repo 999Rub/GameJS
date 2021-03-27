@@ -1,8 +1,8 @@
 // Config du monde
 const config = {
     type: Phaser.WEBGL,
-    width: 800,
-    height: 600,
+    width: 375,
+    height: 812,
     parent: 'phaser-example',
     backgroundColor: '#9adaea',
     useTicker: true,
@@ -35,6 +35,7 @@ var start = false
 var scoreText
 var overText
 var speedGame = 300
+var pointer
 
 // Paramètres de la scène pour le scroll infini
 let cursors
@@ -48,8 +49,8 @@ let cursors
 
 // Ajout infini du décor
 const infiniteAdd = (scene, mapSize, texture, scrollFactor) =>{
-    height = 600
-    width= 800
+    height = 812
+    width= 375
     let x = 0
     for (let i = 0; i < mapSize; i++) {
         const m =   scene.add.image(x, height, texture)
@@ -85,8 +86,8 @@ function create ()
 {
    
 // Dimensions de la fenêtre de jeu
-    const width = 800
-    const height = 600
+    const width = 375
+    const height = 812
     this.add.image(width*0.5 , height*0.5 , 'sky').setScrollFactor(0)
 
 // Ajout des différents éléments du décor
@@ -112,7 +113,7 @@ function create ()
    .setOffset(95,200)
 
 // Création des colonnes qui arrivent par le bas
-   pipe2 = this.physics.add.image(1500,600, 'pipe').setScale(0.5)
+   pipe2 = this.physics.add.image(1500,812, 'pipe').setScale(0.5)
    pipe2.setScrollFactor(0)
    pipe2.body.allowGravity = false
    pipe2.setImmovable(true)
@@ -121,7 +122,7 @@ function create ()
    
 
 // Création du personnage à contrôler
-    cody = this.physics.add.image(300, 375, 'bird')
+    cody = this.physics.add.image(50, 375, 'bird')
     .setScale(0.03)
     .setBounce(0.2)
     .setScrollFactor(0)
@@ -147,7 +148,7 @@ function create ()
             families: [ 'Freckle Face', 'Finger Paint', 'Nosifer' ]
         },
     active: function(){
-        add.text(16, 0, 'Press \nspace \nto play', 
+        add.text(16, 0, 'Tap \nto play', 
         { fontFamily: 'Finger Paint', fontSize: 80, color: '#ffffff' })
         .setShadow(2, 2, "#333333", 2, false, true)
         add.text(500, 200, 'Collect stars to get points', 
@@ -158,13 +159,15 @@ function create ()
     
 // Récup des touches clavier
     cursors = this.input.keyboard.createCursorKeys()
+    pointer = this.input.activePointer;
+
 
 // Ajout du text score + du text gameOver
-    scoreText = this.add.text(375, 10,'', 
+    scoreText = this.add.text(175, 10,'', 
         { fontFamily: 'Finger Paint', fontSize: 50, color: '#ffffff' })
         .setShadow(2, 2, "#333333", 2, false, true).setScrollFactor(false)
-    overText = this.add.text(150, 150,'', 
-        { fontFamily: 'Freckle Face', fontSize: 50, color: '#ffffff' })
+    overText = this.add.text(20, 150,'', 
+        { fontFamily: 'Freckle Face', fontSize: 30, color: '#ffffff' })
         .setShadow(2, 2, "#333333", 2, false, true).setScrollFactor(false)
     
 
@@ -209,7 +212,7 @@ function update ()
     // Retour du pipe bas à droite
         if(pipe2.x < -30){
             pipe2.x = Math.random()*(900 - 1200) + 1200
-            pipe2.y = Math.random()*(650 - 550 ) + 550
+            pipe2.y = Math.random()*(812 - 780 ) + 780
 
         }
     // Retour à droite de l'étoile si loupée
@@ -223,13 +226,7 @@ function update ()
         }
 
         }
-    // Saut avec la touche espace
-        if (cursors.space.isDown){
-            cody.setVelocityY(-200)
-            for (let i = 0; i <= 0.5; i += 0.001) {
-                cody.rotation = -i
-            }
-        }
+        
     // Animation saut vers le haut
         if (cody.body.velocityY >= 0) {
             for (let i = 0; i <= 0.5; i += 0.001) {
@@ -239,21 +236,31 @@ function update ()
         
         }
     // Fin du game si on sort du cadre
-        if (cody.y > 650 || cody.y < -50) {
+        if (cody.y > 850 || cody.y < -50) {
             gameOver()
         }
        
         
-    
-    // Si gameOver on recharge le jeu
-        if (cursors.space.isDown && over == false){
+
+    this.input.on('pointerdown', function(pointer){
+        // Si gameOver on recharge le jeu
+        if (over == false){
             start = true     
         }
     // Si game over on reload la page avec espace
-    if (cursors.space.isDown && over == true) {
+    if ( over == true) {
         over = false
         document.location.reload()
     }
+
+    if (cursors.space.isDown || pointer.isDown){
+        cody.setVelocityY(-250)
+        for (let i = 0; i <= 0.5; i += 0.001) {
+            cody.rotation = -i
+        }
+    }
+        // ...
+     });
     
 
 }
@@ -280,7 +287,7 @@ function gameOver(){
     overText.setText([
         'Game Over ! ',
         '\n    Stars collected : '+ cody.getData('score'),
-        '\n Press space to restart'
+        '\n Tap to restart'
     ])
     pipe.setVelocity(0,0)
     pipe2.setVelocity(0,0)
